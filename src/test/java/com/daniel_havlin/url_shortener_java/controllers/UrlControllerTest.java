@@ -2,10 +2,12 @@ package com.daniel_havlin.url_shortener_java.controllers;
 
 import com.daniel_havlin.url_shortener_java.dto.ShortenedUrlResponse;
 import com.daniel_havlin.url_shortener_java.dto.UrlToShortenRequest;
+import com.daniel_havlin.url_shortener_java.services.UrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
@@ -19,6 +21,9 @@ public class UrlControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @MockitoBean
+    UrlService urlService;
+
     @Autowired
     ObjectMapper objectMapper;
 
@@ -31,6 +36,8 @@ public class UrlControllerTest {
                 "abc123",
                 "https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"
         );
+
+        when(urlService.createShortCode()).thenReturn("abc123");
 
         mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
