@@ -10,8 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -32,7 +31,7 @@ public class UrlServiceTest {
         when(random.nextInt(0, 16)).thenReturn(0, 1, 2, 6, 7, 8);
         when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
 
-        String shortCode = urlService.createShortCode();
+        String shortCode = urlService.generateShortCode();
 
         assertEquals("abc123", shortCode);
         assertTrue(shortCode.matches("^[abcdef1234567890]{6}$"), "code should only use the allowed alphabet");
@@ -51,10 +50,30 @@ public class UrlServiceTest {
         when(urlRepository.existsByShortCode("abc123")).thenReturn(true);
         when(urlRepository.existsByShortCode("123abc")).thenReturn(false);
 
-        String shortCode = urlService.createShortCode();
+        String shortCode = urlService.generateShortCode();
 
         assertEquals("123abc", shortCode);
         verify(urlRepository).existsByShortCode("abc123");
         verify(urlRepository).existsByShortCode("123abc");
+    }
+
+    @Test
+    void testValidUrlSyntax() {
+        assertTrue(urlService.isValidUrl("https://www.google.com/"));
+    }
+
+    @Test
+    void testInvalidUrlSyntax() {
+        assertFalse(urlService.isValidUrl("hppts::/www.google.coom"));
+    }
+
+    @Test
+    void testFunctioningUrl() {
+        assertTrue(urlService.isFunctioningUrl("https://www.google.com/"));
+    }
+
+    @Test
+    void testNonfunctioningUrl() {
+        assertFalse(urlService.isFunctioningUrl("https://www.soilpasnjkweklrj234lkjs.com"));
     }
 }

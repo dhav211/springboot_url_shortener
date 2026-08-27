@@ -37,7 +37,10 @@ public class UrlControllerTest {
                 "https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"
         );
 
-        when(urlService.createShortCode()).thenReturn("abc123");
+        when(urlService.isValidUrl(anyString())).thenReturn(true);
+        when(urlService.isFunctioningUrl(anyString())).thenReturn(true);
+        when(urlService.isSafeUrl(anyString())).thenReturn(true);
+        when(urlService.generateShortCode()).thenReturn("abc123");
 
         mockMvc.perform(post("/shorten")
                 .contentType(MediaType.APPLICATION_JSON)
