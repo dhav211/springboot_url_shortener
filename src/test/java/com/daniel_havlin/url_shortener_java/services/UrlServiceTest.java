@@ -1,6 +1,8 @@
 package com.daniel_havlin.url_shortener_java.services;
 
+import com.daniel_havlin.url_shortener_java.models.Url;
 import com.daniel_havlin.url_shortener_java.repositories.UrlRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,6 +58,26 @@ public class UrlServiceTest {
         assertEquals("123abc", shortCode);
         verify(urlRepository).existsByShortCode("abc123");
         verify(urlRepository).existsByShortCode("123abc");
+    }
+
+    @Test
+    void findUrlByShortCode() {
+        when(urlRepository.findByShortCode("abc123")).thenReturn(Optional.of(new Url("abc123", "https://www.google.com/")));
+
+        Optional<String> fullUrl = urlService.findUrlByShortCode("abc123");
+        if (fullUrl.isPresent()) {
+        assertEquals("https://www.google.com/", fullUrl.get());
+        } else {
+            Assertions.fail("Url couldn't be found by short code abc123");
+        }
+    }
+
+    @Test
+    void urlNotFoundByShortCode() {
+        when(urlRepository.findByShortCode("abc123")).thenReturn(Optional.empty());
+
+        Optional<String> fullUrl = urlService.findUrlByShortCode("abc123");
+        assertTrue(fullUrl.isEmpty());
     }
 
     @Test

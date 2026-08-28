@@ -21,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -62,6 +63,11 @@ public class UrlService {
         } catch (Exception e) {
             throw new FailedToCreateUrlException("Failure to save Url entity to database: " + e.getMessage());
         }
+    }
+
+    public Optional<String> findUrlByShortCode(String shortCode) {
+        Optional<Url> url = urlRepository.findByShortCode(shortCode);
+        return url.map(Url::getFullUrl);
     }
 
     public boolean isUrlAlreadyShortened(String urlToCheck) {

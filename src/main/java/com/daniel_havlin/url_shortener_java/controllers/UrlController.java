@@ -10,9 +10,7 @@ import com.daniel_havlin.url_shortener_java.services.UrlService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UrlController {
@@ -45,4 +43,9 @@ public class UrlController {
         urlService.createShortenedUrl(shortenedUrlResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortenedUrlResponse);
     }
+
+//    @GetMapping("/{shortCode}")
+//    public ResponseEntity<Void> redirectToShortCode(@PathVariable String shortCode) {
+//
+//    }
 }
