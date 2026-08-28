@@ -14,6 +14,13 @@ public class Url {
     @Column(unique = true, nullable = false)
     private String fullUrl;
 
+    protected Url() {}
+
+    public Url(String shortCode, String fullUrl) {
+        this.shortCode = shortCode;
+        this.fullUrl = fullUrl;
+    }
+
     public Long getId() {
         return id;
     }

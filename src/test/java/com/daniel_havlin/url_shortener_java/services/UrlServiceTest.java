@@ -73,6 +73,11 @@ public class UrlServiceTest {
     }
 
     @Test
+    void testBlockedFunctioningUrl() {
+        assertTrue(urlService.isFunctioningUrl("https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"));
+    }
+
+    @Test
     void testNonfunctioningUrl() {
         assertFalse(urlService.isFunctioningUrl("https://www.soilpasnjkweklrj234lkjs.com"));
     }

@@ -1,10 +1,15 @@
 package com.daniel_havlin.url_shortener_java.services;
 
+import com.daniel_havlin.url_shortener_java.dto.ShortenedUrlResponse;
+import com.daniel_havlin.url_shortener_java.exceptions.FailedToCreateUrlException;
+import com.daniel_havlin.url_shortener_java.models.Url;
 import com.daniel_havlin.url_shortener_java.repositories.UrlRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.MalformedURLException;
@@ -27,10 +32,12 @@ public class UrlService {
     private String googleSafeBrowsingApiKey;
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RestClient restClient;
 
     public UrlService(UrlRepository urlRepository, Random random) {
         this.urlRepository = urlRepository;
         this.random = random;
+        this.restClient = RestClient.create();
     }
 
     public String generateShortCode() {
@@ -49,6 +56,18 @@ public class UrlService {
         return sb.toString();
     }
 
+    public void createShortenedUrl(ShortenedUrlResponse shortenedUrlResponse) {
+        try {
+            urlRepository.save(new Url(shortenedUrlResponse.shortCode(), shortenedUrlResponse.fullUrl()));
+        } catch (Exception e) {
+            throw new FailedToCreateUrlException("Failure to save Url entity to database: " + e.getMessage());
+        }
+    }
+
+    public boolean isUrlAlreadyShortened(String urlToCheck) {
+        return urlRepository.existsByFullUrl(urlToCheck);
+    }
+
     public boolean isValidUrl(String urlToCheck) {
         try {
             URI uri = new URI(urlToCheck);
@@ -62,14 +81,15 @@ public class UrlService {
 
     public boolean isFunctioningUrl(String urlToCheck) {
         try {
-            RestClient restClient = RestClient.create();
-
-            ResponseEntity<Void> response = restClient.get()
+            ResponseEntity<Void> response = restClient.head()
                     .uri(urlToCheck)
+                    .header(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                     .retrieve()
                     .toBodilessEntity();
 
             return response.getStatusCode().is2xxSuccessful();
+        } catch (RestClientResponseException e) {
+            return e.getStatusCode().value() == 403; // 403 would indicate that it's blocking us because we are a robot
         } catch (Exception e) {
             return false;
         }

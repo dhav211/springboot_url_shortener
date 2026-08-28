@@ -37,6 +37,7 @@ public class UrlControllerTest {
                 "https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"
         );
 
+        when(urlService.isUrlAlreadyShortened(anyString())).thenReturn(false);
         when(urlService.isValidUrl(anyString())).thenReturn(true);
         when(urlService.isFunctioningUrl(anyString())).thenReturn(true);
         when(urlService.isSafeUrl(anyString())).thenReturn(true);
@@ -49,4 +50,22 @@ public class UrlControllerTest {
                 .andExpect(jsonPath("$.shortCode").value("abc123"));
     }
 
+    @Test
+    void testUrlInUse() throws Exception {
+        UrlToShortenRequest request = new UrlToShortenRequest(
+                "https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"
+        );
+        ShortenedUrlResponse shortenedUrlResponse = new ShortenedUrlResponse(
+                "abc123",
+                "https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"
+        );
+
+        when(urlService.isUrlAlreadyShortened(anyString())).thenReturn(true);
+
+        mockMvc.perform(post("/shorten")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.message").value(request.url() + " is already taken"));
+    }
 }
