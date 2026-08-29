@@ -91,6 +91,15 @@ public class UrlServiceTest {
     }
 
     @Test
+    void completelyIncorrectUrlSyntax() { assertFalse(urlService.isValidUrl("asdkjfa")); }
+
+    @Test
+    void emptyUrlInvalidSyntax() { assertFalse(urlService.isValidUrl(""));}
+
+    @Test
+    void urlJustSpacesInvalidSyntax() { assertFalse(urlService.isValidUrl("     ")); }
+
+    @Test
     void testFunctioningUrl() {
         assertTrue(urlService.isFunctioningUrl("https://www.google.com/"));
     }

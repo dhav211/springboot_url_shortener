@@ -66,6 +66,6 @@ public class UrlControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is(409))
-                .andExpect(jsonPath("$.message").value(request.url() + " is already taken"));
+                .andExpect(jsonPath("$.message").value(request.getUrl() + " is already taken"));
     }
 }

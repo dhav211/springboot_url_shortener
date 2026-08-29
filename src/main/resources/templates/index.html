@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>YaUS!!</title>
+    <link th:href="@{/styles/cssandjs/styles.css}" rel="stylesheet" />
+</head>
+<body>
+
+<div id="input-box">
+    <h1>YaUS!</h1>
+    <h3>Yet Another Url Shortener!</h3>
+    <form id="shortenForm">
+        <input type="text" id="url" name="url" placeholder="What will you shorten today?" />
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("shortenForm").addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const url = document.getElementById("url").value
+
+        const response = await fetch('/shorten', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        const data = await response.json();
+    })
+</script>
+
+</body>
+</html>

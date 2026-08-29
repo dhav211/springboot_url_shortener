@@ -1,0 +1,16 @@
+#input-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#input-box > h1 {
+    color: red;
+    margin-bottom: 0;
+}
+
+#input-box > h3 {
+    margin-top: 0;
+}

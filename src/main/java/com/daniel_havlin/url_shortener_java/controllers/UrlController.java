@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.util.Optional;
+
 @RestController
 public class UrlController {
     private final UrlService urlService;
@@ -22,30 +25,36 @@ public class UrlController {
 
     @PostMapping("/shorten")
     public ResponseEntity<ShortenedUrlResponse> shortenUrl(@RequestBody UrlToShortenRequest urlToShortenRequest) {
-        if (urlService.isUrlAlreadyShortened(urlToShortenRequest.url())) {
-            throw new UrlTakenException(urlToShortenRequest.url() + " is already taken");
+        if (urlService.isUrlAlreadyShortened(urlToShortenRequest.getUrl())) {
+            throw new UrlTakenException(urlToShortenRequest.getUrl() + " is already taken");
         }
 
-        if (!urlService.isValidUrl(urlToShortenRequest.url())) {
-            throw new InvalidUrlException("Invalid URL at " + urlToShortenRequest.url());
+        if (!urlService.isValidUrl(urlToShortenRequest.getUrl())) {
+            throw new InvalidUrlException("Invalid URL at " + urlToShortenRequest.getUrl());
         }
 
-        if (!urlService.isFunctioningUrl(urlToShortenRequest.url())) {
-            throw new NonfunctioningUrlException(urlToShortenRequest.url() + " cannot be reached, it is not a functioning URL");
+        if (!urlService.isFunctioningUrl(urlToShortenRequest.getUrl())) {
+            throw new NonfunctioningUrlException(urlToShortenRequest.getUrl() + " cannot be reached, it is not a functioning URL");
         }
 
-        if (!urlService.isSafeUrl(urlToShortenRequest.url())) {
-            throw new NotSafeUrlException(urlToShortenRequest.url() + " is not a safe URL");
+        if (!urlService.isSafeUrl(urlToShortenRequest.getUrl())) {
+            throw new NotSafeUrlException(urlToShortenRequest.getUrl() + " is not a safe URL");
         }
 
         String shortCode = urlService.generateShortCode();
-        ShortenedUrlResponse shortenedUrlResponse = new ShortenedUrlResponse(shortCode, urlToShortenRequest.url());
+        ShortenedUrlResponse shortenedUrlResponse = new ShortenedUrlResponse(shortCode, urlToShortenRequest.getUrl());
         urlService.createShortenedUrl(shortenedUrlResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortenedUrlResponse);
     }
 
-//    @GetMapping("/{shortCode}")
-//    public ResponseEntity<Void> redirectToShortCode(@PathVariable String shortCode) {
-//
-//    }
+    @GetMapping("/{shortCode}")
+    public ResponseEntity<Void> redirectToShortCode(@PathVariable String shortCode) {
+        Optional<String> fullUrl = urlService.findUrlByShortCode(shortCode);
+
+        // TODO Return to a short code not found page in the orElse section
+        return fullUrl.<ResponseEntity<Void>>map(s -> ResponseEntity
+                .status(HttpStatus.FOUND)
+                .location(URI.create(s))
+                .build()).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

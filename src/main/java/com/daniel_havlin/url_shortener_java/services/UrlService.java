@@ -80,7 +80,7 @@ public class UrlService {
             URL url = uri.toURL();
 
             return true;
-        } catch (URISyntaxException | MalformedURLException e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -93,7 +93,7 @@ public class UrlService {
                     .retrieve()
                     .toBodilessEntity();
 
-            return response.getStatusCode().is2xxSuccessful();
+            return response.getStatusCode().is2xxSuccessful() || response.getStatusCode().is3xxRedirection();
         } catch (RestClientResponseException e) {
             return e.getStatusCode().value() == 403; // 403 would indicate that it's blocking us because we are a robot
         } catch (Exception e) {
