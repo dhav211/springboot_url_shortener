@@ -81,6 +81,30 @@ public class UrlServiceTest {
     }
 
     @Test
+    void shortCodeFoundByFullUrl() {
+        when(urlRepository.findByFullUrl("http://www.theurlinthedatabase.com"))
+                .thenReturn(Optional.of(new Url("abc123", "http://www.theurlinthedatabase.com")));
+        String shortCode = urlService.findShortCodeByUrl("http://www.theurlinthedatabase.com");
+        assertEquals("abc123", shortCode);
+    }
+
+    @Test
+    void returnEmptyStringWhenFullUrlIsNotFound() {
+        when(urlRepository.findByFullUrl("http://theurlinthedatabase.com")).thenReturn(Optional.empty());
+
+        String emptyShortCode = urlService.findShortCodeByUrl("http://www.theurlinthedatabase.com");
+        assertTrue(emptyShortCode.isEmpty());
+    }
+
+    @Test
+    void returnEmptyStringWhenFullUrlIsEmpty() {
+        when(urlRepository.findByFullUrl("")).thenReturn(Optional.empty());
+
+        String emptyShortCode = urlService.findShortCodeByUrl("");
+        assertTrue(emptyShortCode.isEmpty());
+    }
+
+    @Test
     void testValidUrlSyntax() {
         assertTrue(urlService.isValidUrl("https://www.google.com/"));
     }
@@ -107,6 +131,11 @@ public class UrlServiceTest {
     @Test
     void testBlockedFunctioningUrl() {
         assertTrue(urlService.isFunctioningUrl("https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"));
+    }
+
+    @Test
+    void testUrlWithPercentages() {
+        assertTrue(urlService.isFunctioningUrl("https://en.wikipedia.org/wiki/Ang%C3%A9lique_Kidjo"));
     }
 
     @Test

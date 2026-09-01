@@ -70,6 +70,13 @@ public class UrlService {
         return url.map(Url::getFullUrl);
     }
 
+    public String findShortCodeByUrl(String url) {
+        Optional<Url> databaseUrl = urlRepository.findByFullUrl(url);
+        return databaseUrl
+                .map(Url::getShortCode)
+                .orElse("");
+    }
+
     public boolean isUrlAlreadyShortened(String urlToCheck) {
         return urlRepository.existsByFullUrl(urlToCheck);
     }
@@ -87,8 +94,9 @@ public class UrlService {
 
     public boolean isFunctioningUrl(String urlToCheck) {
         try {
+            URI uri = URI.create(urlToCheck);
             ResponseEntity<Void> response = restClient.head()
-                    .uri(urlToCheck)
+                    .uri(uri)
                     .header(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                     .retrieve()
                     .toBodilessEntity();

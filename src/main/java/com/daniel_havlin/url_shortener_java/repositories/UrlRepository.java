@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface UrlRepository extends JpaRepository<Url, Long> {
     Optional<Url> findByShortCode(String shortCode);
-    Optional<String> findByFullUrl(String fullUrl);
+    Optional<Url> findByFullUrl(String fullUrl);
     boolean existsByShortCode(String shortCode);
     boolean existsByFullUrl(String fullUrl);
 }

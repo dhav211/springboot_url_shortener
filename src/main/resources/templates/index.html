@@ -7,7 +7,9 @@
     <link th:href="@{/styles/cssandjs/styles.css}" rel="stylesheet" />
 </head>
 <body>
-
+<div id="banner">
+    Share your shortened URL at http://localhost/abc123
+</div>
 <div id="input-box">
     <h1>YaUS!</h1>
     <h3>Yet Another Url Shortener!</h3>
@@ -15,9 +17,13 @@
         <input type="text" id="url" name="url" placeholder="What will you shorten today?" />
         <button type="submit">Send</button>
     </form>
+
 </div>
 
 <script>
+    let banner = document.getElementById("banner")
+    banner.hidden = true;
+
     document.getElementById("shortenForm").addEventListener('submit', async (e) => {
         e.preventDefault()
         const url = document.getElementById("url").value
@@ -28,6 +34,13 @@
             body: JSON.stringify({ url })
         });
         const data = await response.json();
+        banner.hidden = false;
+        if (!response.ok) {
+            banner.style.backgroundColor = "red"
+            banner.textContent = data["hint"];
+        } else {
+            banner.innerHTML = `Url was successfully shortened. Share it at <a href="http://localhost:8080/${data.shortCode}">${data.shortCode}</a>`
+        }
     })
 </script>
 

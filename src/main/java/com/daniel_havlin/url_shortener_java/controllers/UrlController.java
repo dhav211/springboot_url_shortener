@@ -26,7 +26,10 @@ public class UrlController {
     @PostMapping("/shorten")
     public ResponseEntity<ShortenedUrlResponse> shortenUrl(@RequestBody UrlToShortenRequest urlToShortenRequest) {
         if (urlService.isUrlAlreadyShortened(urlToShortenRequest.getUrl())) {
-            throw new UrlTakenException(urlToShortenRequest.getUrl() + " is already taken");
+            throw new UrlTakenException(
+                    urlToShortenRequest.getUrl() + " is already taken",
+                    urlService.findShortCodeByUrl(urlToShortenRequest.getUrl())
+            );
         }
 
         if (!urlService.isValidUrl(urlToShortenRequest.getUrl())) {

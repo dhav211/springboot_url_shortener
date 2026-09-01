@@ -1,3 +1,8 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 #input-box {
     display: flex;
     flex-direction: column;
@@ -13,4 +18,13 @@
 
 #input-box > h3 {
     margin-top: 0;
+}
+
+#banner {
+    position: absolute;
+    width: 100vw;
+    text-align: center;
+    background-color: limegreen;
+    margin: 0;
+    padding: 8px 0;
 }
