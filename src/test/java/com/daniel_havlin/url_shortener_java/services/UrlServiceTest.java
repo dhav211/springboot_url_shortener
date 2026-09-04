@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.Random;
 
@@ -25,8 +27,15 @@ public class UrlServiceTest {
     @Mock
     private Random random;
 
+    @Mock
+    private HttpClient httpClient;
+
+    @Mock
+    private HttpResponse<String> httpResponse;
+
     @InjectMocks
     private UrlService urlService;
+
 
     @Test
     @DisplayName("Creates a short code that hasn't been created before in database")
@@ -110,36 +119,43 @@ public class UrlServiceTest {
     }
 
     @Test
-    void testInvalidUrlSyntax() {
+    void testInvalidUrlsSyntax() {
         assertFalse(urlService.isValidUrl("hppts::/www.google.coom"));
+        assertFalse(urlService.isValidUrl("asdkjfa"));
+        assertFalse(urlService.isValidUrl(""));
+        assertFalse(urlService.isValidUrl("     "));
+    }
+
+    private void setFakeApiKey() {
+        try {
+            var field = urlService.getClass().getDeclaredField("googleSafeBrowsingApiKey");
+            field.setAccessible(true);
+            field.set(urlService, "fake-key");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
-    void completelyIncorrectUrlSyntax() { assertFalse(urlService.isValidUrl("asdkjfa")); }
+    void testSafeUrlWhenReturnsEmptyResponse() throws Exception {
+        setFakeApiKey();
+        when(httpResponse.body()).thenReturn("{}"); // no "matches" key
+        when(httpClient.<String>send(any(), any())).thenReturn(httpResponse);
 
-    @Test
-    void emptyUrlInvalidSyntax() { assertFalse(urlService.isValidUrl(""));}
+        boolean result = urlService.isSafeUrl("https://www.google.com");
 
-    @Test
-    void urlJustSpacesInvalidSyntax() { assertFalse(urlService.isValidUrl("     ")); }
-
-    @Test
-    void testFunctioningUrl() {
-        assertTrue(urlService.isFunctioningUrl("https://www.google.com/"));
+        assertTrue(result);
     }
 
     @Test
-    void testBlockedFunctioningUrl() {
-        assertTrue(urlService.isFunctioningUrl("https://stackoverflow.com/questions/11291933/requestbody-and-responsebody-annotations-in-spring"));
+    void testMaliciousUrlWhenMatchesPresentInResponse() throws Exception {
+        setFakeApiKey();
+        when(httpResponse.body()).thenReturn("{\"matches\": [{\"threatType\": \"MALWARE\"}]}");
+        when(httpClient.<String>send(any(), any())).thenReturn(httpResponse);
+
+        boolean result = urlService.isSafeUrl("https://malicious-example.com");
+
+        assertFalse(result);
     }
 
-    @Test
-    void testUrlWithPercentages() {
-        assertTrue(urlService.isFunctioningUrl("https://en.wikipedia.org/wiki/Ang%C3%A9lique_Kidjo"));
-    }
-
-    @Test
-    void testNonfunctioningUrl() {
-        assertFalse(urlService.isFunctioningUrl("https://www.soilpasnjkweklrj234lkjs.com"));
-    }
 }

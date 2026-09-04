@@ -23,22 +23,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.logging.Logger;
 
 @Service
 public class UrlService {
+
     private final UrlRepository urlRepository;
     private final Random random;
+    private Logger logger = Logger.getLogger(UrlService.class.getName());
 
     @Value("${googleSafeBrowsingApi.key}")
     private String googleSafeBrowsingApiKey;
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestClient restClient;
 
-    public UrlService(UrlRepository urlRepository, Random random) {
+    public UrlService(UrlRepository urlRepository, Random random, HttpClient httpClient, RestClient restClient) {
         this.urlRepository = urlRepository;
         this.random = random;
-        this.restClient = RestClient.create();
+        this.restClient = restClient;
+        this.httpClient = httpClient;
     }
 
     public String generateShortCode() {
@@ -103,8 +107,13 @@ public class UrlService {
 
             return response.getStatusCode().is2xxSuccessful() || response.getStatusCode().is3xxRedirection();
         } catch (RestClientResponseException e) {
-            return e.getStatusCode().value() == 403; // 403 would indicate that it's blocking us because we are a robot
+            boolean isBlockedByRobotCheck = e.getStatusCode().value() == 403;
+            if (!isBlockedByRobotCheck) {
+                logger.info("URL check failed for " + urlToCheck + ": HTTP " + e.getStatusCode().value());
+            }
+            return isBlockedByRobotCheck; // 403 would indicate that it's blocking us because we are a robot, which is a still functioning url
         } catch (Exception e) {
+            logger.info("URL check failed for " + urlToCheck + ": HTTP " + e.toString());
             return false;
         }
     }
@@ -112,7 +121,6 @@ public class UrlService {
     public boolean isSafeUrl(String urlToCheck) {
         try {
             String result = checkUrlWithGoogleSafeBrowsing(urlToCheck);
-            System.out.println("RAW RESPONSE: " + result);
             return !result.contains("\"matches\"");
         } catch (Exception e) {
             return false;
