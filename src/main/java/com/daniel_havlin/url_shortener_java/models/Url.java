@@ -1,16 +1,26 @@
 package com.daniel_havlin.url_shortener_java.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "url", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "shortCode"),
+        @UniqueConstraint(columnNames = "fullUrl")
+})
 public class Url {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @NotNull
     @Column(unique = true, nullable = false)
     private String shortCode;
 
+    @NotBlank
+    @NotNull
     @Column(unique = true, nullable = false, length = 2048)
     private String fullUrl;
 
