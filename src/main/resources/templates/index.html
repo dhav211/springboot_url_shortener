@@ -8,14 +8,13 @@
 </head>
 <body>
 <div id="banner">
-    Share your shortened URL at http://localhost/abc123
 </div>
 <div id="input-box">
     <h1>YaUS!</h1>
     <h3>Yet Another Url Shortener!</h3>
     <form id="shortenForm">
         <input type="text" id="url" name="url" placeholder="What will you shorten today?" />
-        <button type="submit">Send</button>
+        <button id="shorten-button" type="submit">Shorten</button>
     </form>
 
 </div>
@@ -39,7 +38,7 @@
             banner.style.backgroundColor = "red"
             banner.textContent = data["hint"];
         } else {
-            banner.innerHTML = `Url was successfully shortened. Share it at <a href="http://localhost:8080/${data.shortCode}">${data.shortCode}</a>`
+            banner.innerHTML = `Url was successfully shortened. Share it at <a id="shorten-url-address-link" href="http://localhost:8080/${data.shortCode}">${data.shortCode}</a>`
         }
     })
 </script>
