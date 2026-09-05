@@ -99,7 +99,7 @@ public class UrlServiceTest {
 
     @Test
     void returnEmptyStringWhenFullUrlIsNotFound() {
-        when(urlRepository.findByFullUrl("http://theurlinthedatabase.com")).thenReturn(Optional.empty());
+        when(urlRepository.findByFullUrl("http://www.theurlinthedatabase.com")).thenReturn(Optional.empty());
 
         String emptyShortCode = urlService.findShortCodeByUrl("http://www.theurlinthedatabase.com");
         assertTrue(emptyShortCode.isEmpty());

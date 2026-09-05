@@ -9,18 +9,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@Tag("integration")
 public class GoogleSafeBrowsingTest {
     @Autowired
     private UrlService urlService;
 
     @Test
-    @Tag("integration")
     void testSafeUrl() {
         assertTrue(urlService.isSafeUrl("https://www.google.com"));
     }
 
     @Test
-    @Tag("integration")
     void testUnsafeUrl() {
         assertFalse(urlService.isSafeUrl("http://malware.testing.google.test/testing/malware/"));
     }

@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Tag("integration")
 public class HomePageTests {
     @LocalServerPort
     int port;
@@ -39,14 +40,12 @@ public class HomePageTests {
     }
 
     @Test
-    @Tag("integration")
     void homePageHasCorrectTitle() {
         driver.get("http://localhost:" + port);
         assertEquals("YaUS!!", driver.getTitle());
     }
 
     @Test
-    @Tag("integration")
     void urlSuccessfullyShortened() {
         driver.get("http://localhost:" + port);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));

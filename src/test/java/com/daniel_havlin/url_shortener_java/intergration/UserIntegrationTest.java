@@ -4,6 +4,7 @@ import com.daniel_havlin.url_shortener_java.dto.UrlToShortenRequest;
 import com.daniel_havlin.url_shortener_java.models.Url;
 import com.daniel_havlin.url_shortener_java.repositories.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
+@Tag("integration")
 public class UserIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
