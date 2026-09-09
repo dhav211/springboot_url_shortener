@@ -1,4 +1,4 @@
-package com.daniel_havlin.url_shortener_java.intergration;
+package com.daniel_havlin.url_shortener_java.integration;
 
 import com.daniel_havlin.url_shortener_java.dto.UrlToShortenRequest;
 import com.daniel_havlin.url_shortener_java.models.Url;
@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -87,6 +88,8 @@ public class UserIntegrationTest {
 
     @Test
     void failToRedirectWithWrongShortCode() throws Exception {
-        mockMvc.perform(get("/cba321")).andExpect(status().is(404));
+        mockMvc.perform(get("/cba321"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("no-short-code-error"));
     }
 }

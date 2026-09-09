@@ -2,20 +2,15 @@ package com.daniel_havlin.url_shortener_java.repositories;
 
 import com.daniel_havlin.url_shortener_java.models.Url;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validator;
-import org.hibernate.AssertionFailure;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
@@ -80,6 +75,20 @@ public class UrlRepositoryTest {
         assertThrows(org.hibernate.exception.ConstraintViolationException.class, () -> {
             entityManager.persist(urlWithDuplicateShortCode);
             entityManager.persist(urlWithDuplicateFullUrl);
+        });
+    }
+
+    @Test
+    void tooLongInputThrowException() {
+        Url shortCodeTooLong = new Url("abc1234", "https://www.swiftbysundell.com/basics/map-flatmap-and-compactmap/");
+
+        String stringBuilder = "https://www." + "a".repeat(2048) + ".com";
+        Url fullUrlTooLong = new Url("bb33cc", stringBuilder);
+
+
+        assertThrows(org.hibernate.exception.DataException.class, () -> {
+            entityManager.persist(shortCodeTooLong);
+            entityManager.persist(fullUrlTooLong);
         });
     }
 }

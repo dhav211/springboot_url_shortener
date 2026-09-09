@@ -9,13 +9,13 @@ import com.daniel_havlin.url_shortener_java.exceptions.UrlTakenException;
 import com.daniel_havlin.url_shortener_java.services.UrlService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.Optional;
 
-@RestController
+@Controller
 public class UrlController {
     private final UrlService urlService;
 
@@ -51,13 +51,11 @@ public class UrlController {
     }
 
     @GetMapping("/{shortCode}")
-    public ResponseEntity<Void> redirectToShortCode(@PathVariable String shortCode) {
+    public String redirectToShortCode(@PathVariable String shortCode) {
         Optional<String> fullUrl = urlService.findUrlByShortCode(shortCode);
 
-        // TODO Return to a short code not found page in the orElse section
-        return fullUrl.<ResponseEntity<Void>>map(s -> ResponseEntity
-                .status(HttpStatus.FOUND)
-                .location(URI.create(s))
-                .build()).orElseGet(() -> ResponseEntity.notFound().build());
+        return fullUrl
+                .map(url -> "redirect:" + url)
+                .orElse("no-short-code-error");
     }
 }

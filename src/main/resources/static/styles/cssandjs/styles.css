@@ -28,3 +28,8 @@ body {
     margin: 0;
     padding: 8px 0;
 }
+
+#error-announcement {
+    text-align: center;
+    font-weight: bold;
+}

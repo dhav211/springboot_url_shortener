@@ -1,6 +1,8 @@
 package com.daniel_havlin.url_shortener_java.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -16,7 +18,7 @@ public class Url {
 
     @NotBlank
     @NotNull
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 6)
     private String shortCode;
 
     @NotBlank
