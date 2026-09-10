@@ -50,7 +50,7 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(shortenedUrlResponse);
     }
 
-    @GetMapping("/{shortCode}")
+    @GetMapping("/{shortCode:(?!favicon\\.ico).*}")
     public String redirectToShortCode(@PathVariable String shortCode) {
         Optional<String> fullUrl = urlService.findUrlByShortCode(shortCode);
 
