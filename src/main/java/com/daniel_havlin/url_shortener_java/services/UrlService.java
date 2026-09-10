@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 public class UrlService {
 
     private final UrlRepository urlRepository;
-    private final Random random;
     private Logger logger = Logger.getLogger(UrlService.class.getName());
 
     @Value("${googleSafeBrowsingApi.key}")
@@ -37,28 +36,28 @@ public class UrlService {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestClient restClient;
+    private final ShortCodeGenerator shortCodeGenerator;
 
-    public UrlService(UrlRepository urlRepository, Random random, HttpClient httpClient, RestClient restClient) {
+    public UrlService(UrlRepository urlRepository,
+                      HttpClient httpClient,
+                      RestClient restClient,
+                      ShortCodeGenerator shortCodeGenerator
+    ) {
         this.urlRepository = urlRepository;
-        this.random = random;
         this.restClient = restClient;
         this.httpClient = httpClient;
+        this.shortCodeGenerator = shortCodeGenerator;
     }
 
     public String generateShortCode() {
-        StringBuilder sb = new StringBuilder();
         boolean hasFoundNewCode = false;
-        String[] shortCodeLetters = {"a", "b", "c", "d", "e", "f", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
+        String shortCode = "";
         do {
-            sb.delete(0, sb.length());
-            for (int i = 0; i < 6; i++) {
-                sb.append(shortCodeLetters[random.nextInt(0, shortCodeLetters.length)]);
-            }
-
-            hasFoundNewCode = !urlRepository.existsByShortCode(sb.toString());
+            shortCode = shortCodeGenerator.generate();
+            hasFoundNewCode = !urlRepository.existsByShortCode(shortCode);
         } while (!hasFoundNewCode);
 
-        return sb.toString();
+        return shortCode;
     }
 
     public void createShortenedUrl(ShortenedUrlResponse shortenedUrlResponse) {

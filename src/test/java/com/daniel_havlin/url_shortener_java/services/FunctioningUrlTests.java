@@ -36,7 +36,7 @@ public class FunctioningUrlTests {
     void setUp() {
         RestClient.Builder builder = RestClient.builder();
         mockServer = MockRestServiceServer.bindTo(builder).build();
-        urlService = new UrlService(urlRepository, random, httpClient, builder.build());
+        urlService = new UrlService(urlRepository, httpClient, builder.build(), new ShortCodeGenerator(random));
     }
 
     @Test

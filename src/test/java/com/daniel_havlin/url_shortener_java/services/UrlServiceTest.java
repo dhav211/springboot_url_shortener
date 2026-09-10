@@ -33,6 +33,9 @@ public class UrlServiceTest {
     @Mock
     private HttpResponse<String> httpResponse;
 
+    @Mock
+    private ShortCodeGenerator shortCodeGenerator;
+
     @InjectMocks
     private UrlService urlService;
 
@@ -40,8 +43,8 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Creates a short code that hasn't been created before in database")
     void createUniqueShortCodeOnFirstAttempt() {
-        when(random.nextInt(0, 16)).thenReturn(0, 1, 2, 6, 7, 8);
         when(urlRepository.existsByShortCode(anyString())).thenReturn(false);
+        when(shortCodeGenerator.generate()).thenReturn("abc123");
 
         String shortCode = urlService.generateShortCode();
 
@@ -53,14 +56,8 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Creates a short code on the second attempt, first attempt already was used.")
     void createUniqueShortCodeOnSecondAttempt() {
-        when(random.nextInt(0, 16))
-                .thenReturn(
-                        0, 1, 2, 6, 7, 8,
-                        6, 7, 8, 0, 1, 2
-                );
-
-        when(urlRepository.existsByShortCode("abc123")).thenReturn(true);
-        when(urlRepository.existsByShortCode("123abc")).thenReturn(false);
+        when(shortCodeGenerator.generate()).thenReturn("abc123", "123abc");
+        when(urlRepository.existsByShortCode("abc123")).thenReturn(true, false);
 
         String shortCode = urlService.generateShortCode();
 
