@@ -4,7 +4,9 @@ This URL shortener was made purely for educational purposes. I wanted to increas
 
 It is an incredibly basic URL shortening service that takes a full length url, checks to see if it's a valid URL, if it's a function URL, uses Google's SafeBrowsing API to see if it's a malicious URL, and of course it checks to see if the URL has already been shortened or not. It creates a random six digit hexadecimal number for the short code, for example a3C1da.
 
-I've done my best to test every method within this application, which luckily for me there weren't too many functions to test. There is more test code than actual code in this app!
+I've done my best to test every method within this application, which luckily for me there weren't too many functions to test. There is more test code than actual code in this app! Trying to get the test code coverage to an industry standard of 80% proved to be a bit more challenge than I anticipated, but I have succeeded. This small app does show the complete testing triangle, with my pure functions tested with unit tests, any functions or classes that required dependencies were mocked. When mocking felt like I was "cheating" I performed an integration test to prove my systems actually worked together and I wasn't just mocking to win. Then finally, since this is technically a web app, I introduced Selenium for some end-to-end testing complete with a Page Object Model. I feel pretty satisfied with me work.
+
+![description](test_coverage.png)
 
 ## Tech Stack
 
@@ -60,6 +62,12 @@ This is an ultra-simple application, at this point in time we have just 2 end po
     "url": "https://www.thisisanaddress.com/to/a/realllllly/longurl/"
     }
   ```
+  ```json
+    {
+    "shortCode": "359ae7",
+    "fullUrl": "https://www.boredpanda.com/social-mental-issues-illustrations-sonostatachiara-part-4/"
+    }
+    ```
 
 - `GET /{shortCode}` - Redirect to an URL
 
