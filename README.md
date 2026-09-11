@@ -65,7 +65,7 @@ This is an ultra-simple application, at this point in time we have just 2 end po
   ```json
     {
     "shortCode": "359ae7",
-    "fullUrl": "https://www.boredpanda.com/social-mental-issues-illustrations-sonostatachiara-part-4/"
+    "fullUrl": "https://www.thisisanaddress.com/to/a/realllllly/longurl/"
     }
     ```
 
