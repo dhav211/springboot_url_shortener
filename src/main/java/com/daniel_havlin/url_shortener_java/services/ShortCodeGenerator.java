@@ -13,10 +13,8 @@ public class ShortCodeGenerator {
     }
     public String generate() {
         StringBuilder sb = new StringBuilder();
-        boolean hasFoundNewCode = false;
         String[] shortCodeLetters = {"a", "b", "c", "d", "e", "f", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
 
-        sb.delete(0, sb.length());
         for (int i = 0; i < 6; i++) {
             sb.append(shortCodeLetters[random.nextInt(0, shortCodeLetters.length)]);
         }

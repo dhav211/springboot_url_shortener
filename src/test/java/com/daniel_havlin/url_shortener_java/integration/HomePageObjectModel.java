@@ -19,6 +19,7 @@ public class HomePageObjectModel {
     // <div id="banner">
     private final By bannerBy = By.id("banner");
     private final By shortenedUrlLinkBy = By.id("shorten-url-address-link");
+    private final By errorMessageBy = By.id("error-message");
 
     public HomePageObjectModel(WebDriver driver, int port){
         this.driver = driver;
@@ -49,5 +50,11 @@ public class HomePageObjectModel {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.get("http://localhost:" + port + "/" + shortCode);
         wait.until(ExpectedConditions.urlToBe(url));
+    }
+
+    public String waitForErrorMessage() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageBy));
+        return errorMessage.getText();
     }
 }

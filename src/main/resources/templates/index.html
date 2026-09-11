@@ -36,7 +36,7 @@
         banner.hidden = false;
         if (!response.ok) {
             banner.style.backgroundColor = "red"
-            banner.textContent = data["hint"];
+            banner.innerHTML = `<span id="error-message">${data["hint"]}</span>`;
         } else {
             banner.innerHTML = `Url was successfully shortened. Share it at <a id="shorten-url-address-link" href="http://localhost:8080/${data.shortCode}">${data.shortCode}</a>`
         }

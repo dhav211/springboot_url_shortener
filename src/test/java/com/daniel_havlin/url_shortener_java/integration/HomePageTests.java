@@ -60,6 +60,33 @@ public class HomePageTests {
         assertEquals(urlToShorten, driver.getCurrentUrl());
     }
 
+    @Test
+    void failedToCreateShortCodeOnAlreadyShortenedUrl() {
+        String urlToShorten = "https://en.wikipedia.org/wiki/New_York_(magazine)";
+        String failureMessage = "We've already shortened that url, you can check it out at http://localhost/";
+        homePageObjectModel.submitUrl(urlToShorten);
+        // The banner will pop open giving the user the success message, but we can grab the short code from there
+        String shortCode = homePageObjectModel.getSuccessfulShortCodeText();
+
+        // Reload the page and try the same url again to get an error
+        driver.get("http://localhost:" + port);
+        homePageObjectModel.submitUrl(urlToShorten);
+        String error = homePageObjectModel.waitForErrorMessage();
+
+        assertEquals(failureMessage + shortCode, error);
+    }
+
+    @Test
+    void failedToCreateShortCodeOnMalformedUrl() {
+        String failureMessage = "You've given an invalid url, try it in your browser and correct any mistakes.";
+        String malformedUrl = "htps://google.com";
+        homePageObjectModel.submitUrl(malformedUrl);
+        String error = homePageObjectModel.waitForErrorMessage();
+
+        assertEquals(failureMessage, error);
+
+    }
+
     @AfterEach
     void teardown() {
         if (driver != null) {
