@@ -111,7 +111,7 @@ public class UrlService {
                 logger.info("URL check failed for " + urlToCheck + ": HTTP " + e.getStatusCode().value());
             }
             return isBlockedByRobotCheck; // 403 would indicate that it's blocking us because we are a robot, which is a still functioning url
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             logger.info("URL check failed for " + urlToCheck + ": HTTP " + e.toString());
             return false;
         }
